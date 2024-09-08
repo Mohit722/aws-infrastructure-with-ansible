@@ -1,0 +1,45 @@
+---
+# This role manages AWS EC2 instances and S3 buckets.
+# It can create or delete these resources based on the provided state.
+
+# Task to manage the EC2 instance (create or terminate based on instance_state)
+- name: Manage AWS EC2 Instance
+  amazon.aws.ec2_instance:
+    name: "{{ instance_name }}"  # Name of the EC2 instance
+    key_name: "devops"           # Name of the SSH key pair for the instance
+    instance_type: "t2.micro"    # Type of instance to create
+    image_id: "ami-0eeb03e72075b9bcc"  # AMI ID of the instance image
+    state: "{{ instance_state }}"  # Desired state ('present' to create, 'absent' to terminate)
+    wait: true  # Wait for the instance to be running before proceeding
+    region: "ap-south-1"  # AWS region for the instance
+    security_groups:
+      - "launch-wizard-5"  # Security group for the instance
+  register: ec2  # Register the result to use in subsequent tasks
+  tags:
+    - ec2  # Add this tag
+
+# Task to save the EC2 instance ID to a file (only if the instance is being created)
+- name: Save EC2 instance ID to a file
+  copy:
+    content: "{{ ec2.instance_ids[0] }}"  # Write the instance ID to the file
+    dest: /home/ubuntu/instance_id.txt  # Path to save the instance ID
+  when: instance_state == 'present'  # Only execute if the instance is being created
+  tags:
+    - ec2  # Add this tag
+
+# Task to display the EC2 instance ID (only if the instance is being created)
+- name: Display EC2 instance ID
+  debug:
+    msg: "Created instance ID: {{ ec2.instance_ids[0] }}"  # Display the instance ID
+  when: instance_state == 'present'  # Only execute if the instance is being created
+  tags:
+    - ec2  # Add this tag
+
+# Task to manage the S3 bucket (create or delete based on s3_state)
+- name: Manage S3 Bucket
+  amazon.aws.s3_bucket:
+    name: "{{ s3_bucket_name }}"  # Using variable for the S3 bucket name
+    region: "ap-south-1"  # AWS region for the S3 bucket
+    state: "{{ s3_state }}"  # Desired state ('present' to create, 'absent' to delete)
+  tags:
+    - s3  # Tag for the bucket

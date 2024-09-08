@@ -1,0 +1,14 @@
+
+# Default variables for the AWS resources role
+
+# Default state for EC2 instances
+instance_state: "present"  # Can be overridden by extra-vars
+
+# Default state for S3 buckets
+s3_state: "present"  # Can be overridden by extra-vars
+
+# Default name for the S3 bucket
+s3_bucket_name: "my-default-bucket"  # Can be overridden by extra-vars
+
+# Default name for the EC2 instance
+instance_name: "my-instance"  # Can be overridden by extra-vars

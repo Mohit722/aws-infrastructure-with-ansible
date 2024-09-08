@@ -1,0 +1,39 @@
+
+# To create EC2 instance
+# ansible-playbook awsservices.yml --tags ec2
+
+# To create or manage S3 bucket
+# ansible-playbook awsservices.yml --tags s3 --extra-vars "s3state=present"
+
+
+# Pre-requisites: Install Python3, pip, boto3, and botocore Before running the main playbook, ensure the following steps
+
+# 1. Update package repositories (Ubuntu/Debian): sudo apt update
+# 2. Install Python3 and pip:    sudo apt install -y python3 python3-pip
+# 3. Remove the broken virtual environment:  rm -rf /home/ubuntu/myenv
+
+# 4. Recreate the virtual environment:  python3 -m venv /home/ubuntu/myenv
+
+# 5. After recreating the environment, check if the Python interpreter now exists:  ls /home/ubuntu/myenv/bin/python3
+
+# 6. Activate the virtual environment:   source /home/ubuntu/myenv/bin/activate
+
+# 7. pip install --upgrade pip setuptools
+
+# 8. Install boto3 and botocore using pip:   pip install boto3 botocore ansible
+# 9. Verify boto3 and botocore installation:  pip show boto3 botocore, which python3,  pip list | grep boto3
+# 10 after done this if your work with done playbook execution then you can exit from virutla environment to do: deactivate
+# 11: rm -rf /home/ubuntu/myenv
+
+
+
+---
+- name: Set up Python environment and install dependencies
+  hosts: all
+  gather_facts: no
+  become: true
+  vars:
+     interpreter_python: /home/ubuntu/myenv/bin/python3
+
+  roles:
+    - aws_resources
